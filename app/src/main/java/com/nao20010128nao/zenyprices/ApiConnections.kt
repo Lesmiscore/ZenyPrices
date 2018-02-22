@@ -1,6 +1,7 @@
 package com.nao20010128nao.zenyprices
 
 import com.neovisionaries.ws.client.WebSocketFactory
+import de.bitsharesmunich.graphenej.Asset
 import de.bitsharesmunich.graphenej.Converter
 import de.bitsharesmunich.graphenej.LimitOrder
 import de.bitsharesmunich.graphenej.api.GetLimitOrders
@@ -19,7 +20,7 @@ import kotlin.math.min
 fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first()
 
 // quote / base
-fun ExecutorService.getBitSharesPair(base: CoinsNeeded, quote: CoinsNeeded): Future<BigDecimal?> {
+fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecimal?> {
     return submit(Callable {
         var result: BigDecimal? = null
         val lock = Any()
