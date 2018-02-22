@@ -19,9 +19,9 @@ class MainActivity : AppCompatActivity() {
         val exec = Executors.newSingleThreadExecutor()
         thread {
             try {
-                val btcZny = exec.getBitSharesPair(CoinsNeeded.BTC, CoinsNeeded.ZNY).get()
+                val btcZny = exec.getBitSharesPair(CoinsNeeded.MONA, CoinsNeeded.ZNY).get()
                 runOnUiThread {
-                    text.text = "ZNY/BTC: $btcZny"
+                    text.text = "ZNY/MONA: $btcZny"
                 }
             } catch (e: Throwable) {
                 runOnUiThread {

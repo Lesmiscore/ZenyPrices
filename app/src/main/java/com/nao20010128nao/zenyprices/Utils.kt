@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.math.BigDecimal
 import java.math.MathContext
+import kotlin.math.max
 
 sealed class CoinsNeeded(assetId: String, symbol: String, precision: Int) : Asset(assetId, symbol, precision) {
     object BTC : CoinsNeeded("1.3.1570", "BTC", 8)
@@ -58,11 +59,11 @@ fun getConversionRate(price: Price, direction: Int): BigDecimal {
     if (base.precision == -1 || quote.precision == -1) {
         throw IncompleteAssetError("The given asset instance must provide precision information")
     }
-    var conversionRate: BigDecimal
-    var precisionFactor: BigDecimal
-    val mathContext = MathContext(Math.max(base.precision, quote.precision))
-    val baseValue = BigDecimal.valueOf(price.base.amount.toDouble())
-    val quoteValue = BigDecimal.valueOf(price.quote.amount.toDouble())
+    val conversionRate: BigDecimal
+    val precisionFactor: BigDecimal
+    val mathContext = MathContext(max(base.precision, quote.precision))
+    val baseValue = BigDecimal(price.base.amount.bigIntegerValue())
+    val quoteValue = BigDecimal(price.quote.amount.bigIntegerValue())
     //        System.out.println(String.format("base: %d, quote: %d", baseValue.longValue(), quoteValue.longValue()));
     if (direction == BASE_TO_QUOTE) {
         conversionRate = quoteValue.divide(baseValue, mathContext)

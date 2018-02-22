@@ -28,7 +28,6 @@ fun ExecutorService.getBitSharesPair(base: CoinsNeeded, quote: CoinsNeeded): Fut
             override fun onSuccess(response: WitnessResponse<*>) {
                 val orders = response.result as List<LimitOrder>
                 assert(!orders.isEmpty())
-                val converter = Converter()
                 for (order in orders) {
                     if (order.sellPrice.base.asset.objectId == base.objectId) {
                         order.sellPrice.base.asset.precision = base.precision
