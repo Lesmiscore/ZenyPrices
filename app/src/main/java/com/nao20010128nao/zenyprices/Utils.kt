@@ -11,10 +11,22 @@ import java.math.MathContext
 import java.net.URL
 import kotlin.math.max
 
-sealed class CoinsNeeded(assetId: String, symbol: String, precision: Int) : Asset(assetId, symbol, precision) {
-    object BTC : CoinsNeeded("1.3.1570", "BTC", 8)
-    object MONA : CoinsNeeded("1.3.2570", "MONA", 6)
-    object ZNY : CoinsNeeded("1.3.2481", "ZNY", 6)
+enum class SupportedCurrency {
+    BTC, MONA, ZNY, JPY, USD
+}
+
+typealias TradingPair = Pair<SupportedCurrency, SupportedCurrency>
+fun TradingPair.reverse():TradingPair = second to first
+
+sealed class BitSharesAssets(
+        assetId: String,
+        symbol: String,
+        precision: Int,
+        val currency: SupportedCurrency
+) : Asset(assetId, symbol, precision) {
+    object BTC : BitSharesAssets("1.3.1570", "BTC", 8, SupportedCurrency.BTC)
+    object MONA : BitSharesAssets("1.3.2570", "MONA", 6, SupportedCurrency.MONA)
+    object ZNY : BitSharesAssets("1.3.2481", "ZNY", 6, SupportedCurrency.ZNY)
 }
 
 // List of BitShares full nodes, from OpenLedger and CryptoBridge
@@ -27,16 +39,17 @@ val bitSharesFullNodes = listOf(
 
 const val zaifLastPriceEndpoint = "https://api.zaif.jp/api/1/last_price"
 
-enum class ZaifLastPrice(val pair: String) {
-    BTC_JPY("btc_jpy"), MONA_JPY("mona_jpy");
+enum class ZaifLastPrice(val type: String, val tradingPair: TradingPair) {
+    BTC_JPY("btc_jpy", SupportedCurrency.BTC to SupportedCurrency.JPY),
+    MONA_JPY("mona_jpy", SupportedCurrency.MONA to SupportedCurrency.JPY);
 
-    fun toUrlString() = "$zaifLastPriceEndpoint/$pair"
+    fun toUrlString() = "$zaifLastPriceEndpoint/$type"
 }
 
 const val gaitameOnlineEndpoint = "https://www.gaitameonline.com/rateaj/getrate"
 
-enum class GaitameOnlineLastPrice(val pair: String) {
-    USD_JPY("USDJPY")
+enum class GaitameOnlineLastPrice(val id: String, val tradingPair: TradingPair) {
+    USD_JPY("USDJPY", SupportedCurrency.USD to SupportedCurrency.JPY)
 }
 
 fun withRequest(url: String) = Request.Builder().url(url).build()

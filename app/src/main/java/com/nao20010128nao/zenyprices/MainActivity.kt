@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         thread {
             try {
                 val monaJpyJob = ZaifJob(ZaifLastPrice.MONA_JPY, false)
-                val znyMonaJob = BitSharesJob(CoinsNeeded.ZNY, CoinsNeeded.MONA)
+                val znyMonaJob = BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA)
                 val monaJpy = monaJpyJob.enqueue(exec).get()
                 val znyMona = znyMonaJob.enqueue(exec).get()
                 val znyJpy = znyMona times monaJpy

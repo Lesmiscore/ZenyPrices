@@ -12,6 +12,7 @@ import java.util.concurrent.Future
 interface PriceJob {
     fun enqueue(exec: ExecutorService): Future<BigDecimal?>
     fun inverse(): PriceJob
+    val tradingPair: TradingPair
 }
 
 data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
@@ -36,13 +37,17 @@ data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
     }
 
     override fun inverse(): PriceJob = ZaifJob(pair, !inverse)
+
+    override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
 }
 
-data class BitSharesJob(val base: Asset, val quote: Asset) : PriceJob {
+data class BitSharesJob(val base: BitSharesAssets, val quote: BitSharesAssets) : PriceJob {
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> =
             exec.getBitSharesPair(base, quote)
 
     override fun inverse(): PriceJob = BitSharesJob(quote, base)
+
+    override val tradingPair: TradingPair = quote.currency to base.currency
 }
 
 data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boolean) : PriceJob {
@@ -54,7 +59,7 @@ data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boole
                         .execute().body()?.string()!!
                 val json = Gson().fromJson(body, JsonObject::class.java)
                 json["quotes"].asJsonArray
-                        .firstOrNull { it.asJsonObject["currencyPairCode"]?.asString == pair.pair }
+                        .firstOrNull { it.asJsonObject["currencyPairCode"]?.asString == pair.id }
                         ?.asJsonObject?.get("open")?.asBigDecimal
             } catch (e: Throwable) {
                 null
@@ -69,9 +74,20 @@ data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boole
     }
 
     override fun inverse(): PriceJob = GaitameOnlineJob(pair, !inverse)
+
+    override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
 }
 
 class PriceConverter(vararg val jobs: PriceJob) {
+    // validate that all jobs can be combined
+    val tradingPair: TradingPair = jobs.map { it.tradingPair }
+            .reduce { a, b ->
+                if (a.second == b.first)
+                    a.first to b.second
+                else
+                    throw IllegalArgumentException("$a and $b can't be combined")
+            }
+
     fun startConversion(): PriceConversionProgress = PriceConversionProgress(jobs.toSet())
 }
 
