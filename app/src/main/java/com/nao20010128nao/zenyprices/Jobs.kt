@@ -171,16 +171,18 @@ class PriceConverter(vararg val jobs: PriceJob) {
 
     val conversionOrder = jobs.map { it.tradingPair.first } + listOf(jobs.last().tradingPair.second)
 
-    val conversionProgress: PriceConversionProgress = PriceConversionProgress(jobs.toSet())
+    val conversionProgress: PriceConversionProgress = PriceConversionProgress(jobs.toList())
 
     override fun toString(): String =
             jobs.map { "${it.tradingPair.displayString}: ${conversionProgress[it]}" }.joinToString("\n")
 
-    class PriceConversionProgress internal constructor(val jobs: Set<PriceJob>) {
+    class PriceConversionProgress internal constructor(val jobs: List<PriceJob>) {
+        private val jobsSet = jobs.toSet()
+
         private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
         @JvmName("submit")
         operator fun set(job: PriceJob, value: BigDecimal?) {
-            if (job in jobs && job !in finished.keys) {
+            if (job in jobsSet && job !in finished.keys) {
                 finished[job] = value
             }
         }
@@ -191,12 +193,12 @@ class PriceConverter(vararg val jobs: PriceJob) {
             finished.clear()
         }
 
-        fun remainingJobs() = jobs - finished.keys
+        fun remainingJobs() = jobsSet - finished.keys
 
         fun remainingJobsCount() = remainingJobs().size
 
         fun calculate(): BigDecimal? = when (remainingJobsCount()) {
-            0 -> finished.values.reduce { a, b -> a times b }
+            0 -> jobs.map { finished[it] }.reduce { a, b -> a times b }
             else -> null
         }
     }
