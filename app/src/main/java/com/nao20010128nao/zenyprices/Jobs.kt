@@ -47,7 +47,7 @@ data class BitSharesJob(val base: BitSharesAssets, val quote: BitSharesAssets) :
 
     override fun inverse(): PriceJob = BitSharesJob(quote, base)
 
-    override val tradingPair: TradingPair = quote.currency to base.currency
+    override val tradingPair: TradingPair = base.currency to quote.currency
 }
 
 data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boolean) : PriceJob {

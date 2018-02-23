@@ -16,6 +16,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val text: TextView = findViewById(R.id.textInit)
 
+        val jobs = listOf(
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.BTC),
+                        ZaifJob(ZaifLastPrice.BTC_JPY, false)
+                ),
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
+                        ZaifJob(ZaifLastPrice.MONA_JPY, false)
+                )
+        )
         val exec = Executors.newSingleThreadExecutor()
         thread {
             try {
