@@ -44,3 +44,22 @@ data class BitSharesJob(val base: Asset, val quote: Asset) : PriceJob {
 
     override fun inverse(): PriceJob = BitSharesJob(quote, base)
 }
+
+class PriceConverter(vararg val jobs: PriceJob) {
+    fun startConversion(): PriceConversionProgress = PriceConversionProgress(jobs.toSet())
+}
+
+class PriceConversionProgress internal constructor(val jobs: Set<PriceJob>) {
+    private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
+    operator fun set(job: PriceJob, value: BigDecimal?) {
+        if (job in jobs && job !in finished.keys) {
+            finished[job] = value
+        }
+    }
+
+    fun remainingJobs() = jobs - finished.keys
+
+    fun remainingJobsCount() = remainingJobs().size
+
+    fun calculate(): BigDecimal? = finished.values.reduce { a, b -> a times b }
+}
