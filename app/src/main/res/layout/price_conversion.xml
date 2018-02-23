@@ -5,6 +5,8 @@
 
         <import type="com.nao20010128nao.zenyprices.R" />
 
+        <import type="java.math.BigDecimal" />
+
         <variable
             name="jobs"
             type="com.nao20010128nao.zenyprices.PriceConverter" />
@@ -40,7 +42,7 @@
                 android:id="@+id/price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{jobs.tradingPair.second+`/`+jobs.tradingPair.first+`: `+intermediate.calculate()}" />
+                android:text="@{jobs.tradingPair.second+`/`+jobs.tradingPair.first+`: `+intermediate.calculate().setScale(3,BigDecimal.ROUND_DOWN)}" />
 
             <TextView
                 android:id="@+id/remaining"
