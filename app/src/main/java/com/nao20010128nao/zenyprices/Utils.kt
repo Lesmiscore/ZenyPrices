@@ -78,7 +78,7 @@ enum class BitFlyerLastPrice(val type: String, val tradingPair: TradingPair) {
 const val coinDeskLastPriceEndpoint = "https://api.coindesk.com/v1/bpi/currentprice.json"
 
 enum class CoinDeskLastPrice(val type: String, val tradingPair: TradingPair) {
-    BTC_USD("USD", SupportedCurrency.BTC to SupportedCurrency.JPY);//,
+    BTC_USD("USD", SupportedCurrency.BTC to SupportedCurrency.USD);//,
     //BTC_GBP("GBP", SupportedCurrency.BTC to SupportedCurrency.JPY),
     //BTC_EUR("EUR", SupportedCurrency.BTC to SupportedCurrency.BTC);
 }

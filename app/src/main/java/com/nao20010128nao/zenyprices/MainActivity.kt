@@ -6,7 +6,12 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import com.google.common.util.concurrent.FutureCallback
+import com.google.common.util.concurrent.Futures
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import com.nao20010128nao.zenyprices.databinding.PriceConversionBinding
+import java.math.BigDecimal
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
@@ -14,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var list: RecyclerView
     private val convertions: MutableList<PriceConverter> = mutableListOf()
-    private val executor = Executors.newFixedThreadPool(5)
+    private val executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5))
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +54,8 @@ class MainActivity : AppCompatActivity() {
                 PriceConverter(
                         BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
                         BitSharesJob(BitSharesAssets.MONA, BitSharesAssets.BTC),
-                        ZaifJob(ZaifLastPrice.BTC_JPY, false),
-                        ZaifJob(ZaifLastPrice.BTC_JPY, false)
+                        CoinDeskJob(CoinDeskLastPrice.BTC_USD, false),
+                        GaitameOnlineJob(GaitameOnlineLastPrice.USD_JPY, false)
                 )
         )
 
@@ -67,8 +72,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startCheck() {
-        thread {
-            val conversions = convertions.flatMap { it.conversionOrder }.distinct()
+        val jobs = convertions.flatMap { it.jobs.toList() }.distinct()
+        jobs.forEach { job ->
+            Futures.addCallback(job.enqueue(executor) as ListenableFuture<BigDecimal?>, object : FutureCallback<BigDecimal?> {
+                override fun onSuccess(result: BigDecimal?) {
+                    runOnUiThread {
+                        convertions.forEach {
+                            it.conversionProgress[job] = result
+                        }
+                    }
+                }
+
+                override fun onFailure(err: Throwable?) {
+                    runOnUiThread {
+                        err?.printStackTrace()
+                        convertions.forEach {
+                            it.conversionProgress[job] = null
+                        }
+                    }
+                }
+            })
         }
     }
 
