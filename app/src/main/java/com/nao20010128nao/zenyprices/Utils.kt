@@ -1,7 +1,6 @@
 package com.nao20010128nao.zenyprices
 
 import de.bitsharesmunich.graphenej.Asset
-import de.bitsharesmunich.graphenej.Converter
 import de.bitsharesmunich.graphenej.Converter.BASE_TO_QUOTE
 import de.bitsharesmunich.graphenej.Price
 import de.bitsharesmunich.graphenej.errors.IncompleteAssetError
@@ -26,7 +25,7 @@ val bitSharesFullNodes = listOf(
         "wss://bitshares.openledger.info/ws"
 )
 
-val zaifLastPriceEndpoint = "https://api.zaif.jp/api/1/last_price"
+const val zaifLastPriceEndpoint = "https://api.zaif.jp/api/1/last_price"
 
 enum class ZaifLastPrice(val pair: String) {
     BTC_JPY("btc_jpy"), MONA_JPY("mona_jpy");
@@ -34,7 +33,7 @@ enum class ZaifLastPrice(val pair: String) {
     fun toUrlString() = "$zaifLastPriceEndpoint/$pair"
 }
 
-val gaitameOnlineEndpoint = "https://www.gaitameonline.com/rateaj/getrate"
+const val gaitameOnlineEndpoint = "https://www.gaitameonline.com/rateaj/getrate"
 
 enum class GaitameOnlineLastPrice(val pair: String) {
     USD_JPY("USDJPY")
