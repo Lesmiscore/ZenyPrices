@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
 import android.view.ViewGroup
 import com.google.common.util.concurrent.FutureCallback
 import com.google.common.util.concurrent.Futures
@@ -96,6 +98,24 @@ class MainActivity : AppCompatActivity() {
             })
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean = menu?.run {
+        add(0, 0, 0, R.string.update)
+        true
+    } == true
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = item?.run {
+        when (groupId) {
+            0 -> when (itemId) {
+                0 -> yay(true) {
+                    resetPrices()
+                    startCheck()
+                }
+                else -> false
+            }
+            else -> false
+        }
+    } != false
 
     class ConvAdapter(val activity: MainActivity) : RecyclerView.Adapter<PriceConversionVH>() {
         override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): PriceConversionVH =

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ZenyPrices</string>
     <string name="remaining_count">"Remaining jobs: "</string>
+    <string name="update">Update</string>
 </resources>

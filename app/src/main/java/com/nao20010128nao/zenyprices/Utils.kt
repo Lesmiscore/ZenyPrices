@@ -133,3 +133,8 @@ typealias VH = RecyclerView.ViewHolder
 
 class BindingViewHolder<out T : ViewDataBinding>(val binding: T) : VH(binding.root)
 typealias PriceConversionVH = BindingViewHolder<PriceConversionBinding>
+
+inline fun <T> Any.yay(a: T): T = a
+inline fun <T> yay(a: T, f: () -> Unit): T = a.also {
+    f()
+}
