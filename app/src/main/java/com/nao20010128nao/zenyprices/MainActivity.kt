@@ -19,9 +19,13 @@ class MainActivity : AppCompatActivity() {
         val exec = Executors.newSingleThreadExecutor()
         thread {
             try {
-                val btcZny = exec.getBitSharesPair(CoinsNeeded.MONA, CoinsNeeded.ZNY).get()
+                val monaJpyJob = ZaifJob(ZaifLastPrice.MONA_JPY, false)
+                val znyMonaJob = BitSharesJob(CoinsNeeded.ZNY, CoinsNeeded.MONA)
+                val monaJpy = monaJpyJob.enqueue(exec).get()
+                val znyMona = znyMonaJob.enqueue(exec).get()
+                val znyJpy = znyMona times monaJpy
                 runOnUiThread {
-                    text.text = "ZNY/MONA: $btcZny"
+                    text.text = "JPY > MONA > ZNY: $znyJpy, JPY > MONA: $monaJpy, MONA > ZNY: $znyMona"
                 }
             } catch (e: Throwable) {
                 runOnUiThread {

@@ -9,15 +9,22 @@ import de.bitsharesmunich.graphenej.interfaces.WitnessResponseListener
 import de.bitsharesmunich.graphenej.models.BaseResponse
 import de.bitsharesmunich.graphenej.models.WitnessResponse
 import java.math.BigDecimal
-import java.net.Socket
-import java.net.URI
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
-import kotlin.math.min
 
 
-fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first()
+fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first{
+    try {
+        WebSocketFactory().createSocket(it).also {
+            it.connect()
+            it.disconnect()
+        }
+        true
+    }catch (e:Throwable){
+        false
+    }
+}
 
 // quote / base
 fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecimal?> {

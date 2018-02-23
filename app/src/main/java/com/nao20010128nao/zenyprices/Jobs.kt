@@ -20,6 +20,7 @@ data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
             val url = pair.toUrlString()
             try {
                 val body = okClient().newCall(withRequest(url)).execute().body()?.string()!!
+                //val body = url.toURL().openStream().bufferedReader()
                 val json = Gson().fromJson(body, JsonObject::class.java)
                 json["last_price"].asBigDecimal
             } catch (e: Throwable) {

@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.math.BigDecimal
 import java.math.MathContext
+import java.net.URL
 import kotlin.math.max
 
 sealed class CoinsNeeded(assetId: String, symbol: String, precision: Int) : Asset(assetId, symbol, precision) {
@@ -25,7 +26,7 @@ val bitSharesFullNodes = listOf(
         "wss://bitshares.openledger.info/ws"
 )
 
-val zaifLastPriceEndpoint = "https://api.zaif.jp/api/1/last_price/"
+val zaifLastPriceEndpoint = "https://api.zaif.jp/api/1/last_price"
 
 enum class ZaifLastPrice(val pair: String) {
     BTC_JPY("btc_jpy"), MONA_JPY("mona_jpy");
@@ -51,7 +52,7 @@ inline fun measure(f: () -> Unit): Long {
 fun Any.javaWait() = (this as java.lang.Object).wait()
 fun Any.javaNotifyAll() = (this as java.lang.Object).notifyAll()
 
-val TEN = BigDecimal.TEN
+val TEN = BigDecimal.TEN!!
 
 fun getConversionRate(price: Price, direction: Int): BigDecimal {
     val base = price.base.asset
@@ -75,3 +76,5 @@ fun getConversionRate(price: Price, direction: Int): BigDecimal {
     //        System.out.println(String.format("conversion rate: %.4f, precision factor: %.2f", conversionRate, precisionFactor));
     return conversionRate * precisionFactor
 }
+
+fun String.toURL(): URL = URL(this)
