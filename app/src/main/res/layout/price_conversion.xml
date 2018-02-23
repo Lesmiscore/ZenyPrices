@@ -41,5 +41,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@{context.getString(R.string.remaining_count)+intermediate.remainingJobsCount()}" />
+
+        <TextView
+            android:id="@+id/intermediatePrices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{``+jobs+``}" />
+
     </LinearLayout>
 </layout>

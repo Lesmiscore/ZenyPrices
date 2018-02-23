@@ -23,7 +23,7 @@ data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
                 val body = okClient().newCall(withRequest(url)).execute().body()?.string()!!
                 //val body = url.toURL().openStream().bufferedReader()
                 val json = Gson().fromJson(body, JsonObject::class.java)
-                json["last_price"].asBigDecimal
+                json["last_price"]?.asBigDecimal
             } catch (e: Throwable) {
                 null
             }?.run {
@@ -138,7 +138,9 @@ data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : Pric
                         .newCall(withRequest(coinDeskLastPriceEndpoint))
                         .execute().body()?.string()!!
                 val json = Gson().fromJson(body, JsonObject::class.java)
-                json["bpi"]?.asJsonObject?.get(pair.type)?.asBigDecimal
+                json["bpi"]?.asJsonObject
+                        ?.get(pair.type)?.asJsonObject
+                        ?.get("rate_float")?.asBigDecimal
             } catch (e: Throwable) {
                 null
             }?.run {
@@ -171,6 +173,9 @@ class PriceConverter(vararg val jobs: PriceJob) {
 
     val conversionProgress: PriceConversionProgress = PriceConversionProgress(jobs.toSet())
 
+    override fun toString(): String =
+            jobs.map { "${it.tradingPair.displayString}: ${conversionProgress[it]}" }.joinToString("\n")
+
     class PriceConversionProgress internal constructor(val jobs: Set<PriceJob>) {
         private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
         @JvmName("submit")
@@ -179,6 +184,8 @@ class PriceConverter(vararg val jobs: PriceJob) {
                 finished[job] = value
             }
         }
+
+        operator fun get(job: PriceJob): BigDecimal? = finished[job]
 
         fun clear() {
             finished.clear()

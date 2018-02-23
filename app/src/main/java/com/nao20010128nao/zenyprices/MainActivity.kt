@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
                         convertions.forEach {
                             it.conversionProgress[job] = result
                         }
+                        list.adapter.notifyDataSetChanged()
                     }
                 }
 
@@ -89,6 +90,7 @@ class MainActivity : AppCompatActivity() {
                         convertions.forEach {
                             it.conversionProgress[job] = null
                         }
+                        list.adapter.notifyDataSetChanged()
                     }
                 }
             })
