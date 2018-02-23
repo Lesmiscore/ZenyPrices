@@ -61,6 +61,14 @@ class MainActivity : AppCompatActivity() {
                 )
         )
 
+        convertions.add(
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
+                        BitSharesJob(BitSharesAssets.MONA, BitSharesAssets.BTC),
+                        BitSharesJob(BitSharesAssets.BTC, BitSharesAssets.ZNY)
+                )
+        )
+
         list.adapter = ConvAdapter(this)
 
         startCheck()
