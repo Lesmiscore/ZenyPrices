@@ -78,6 +78,85 @@ data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boole
     override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
 }
 
+
+data class CoinCheckJob(val pair: CoinCheckLastPrice, val inverse: Boolean) : PriceJob {
+    override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
+        return exec.submit(Callable {
+            val url = pair.toUrlString()
+            try {
+                val body = okClient().newCall(withRequest(url)).execute().body()?.string()!!
+                val json = Gson().fromJson(body, JsonObject::class.java)
+                json["rate"].asBigDecimal
+            } catch (e: Throwable) {
+                null
+            }?.run {
+                if (inverse) {
+                    BigDecimal.ONE.divide(this, MathContext(15))
+                } else {
+                    this
+                }
+            }
+        })
+    }
+
+    override fun inverse(): PriceJob = CoinCheckJob(pair, !inverse)
+
+    override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
+}
+
+
+data class BitFlyerJob(val pair: BitFlyerLastPrice, val inverse: Boolean) : PriceJob {
+    override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
+        return exec.submit(Callable {
+            val url = pair.toUrlString()
+            try {
+                val body = okClient().newCall(withRequest(url)).execute().body()?.string()!!
+                val json = Gson().fromJson(body, JsonObject::class.java)
+                json["mid_price"].asBigDecimal
+            } catch (e: Throwable) {
+                null
+            }?.run {
+                if (inverse) {
+                    BigDecimal.ONE.divide(this, MathContext(15))
+                } else {
+                    this
+                }
+            }
+        })
+    }
+
+    override fun inverse(): PriceJob = BitFlyerJob(pair, !inverse)
+
+    override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
+}
+
+data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : PriceJob {
+    override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
+        return exec.submit(Callable {
+            try {
+                val body = okClient()
+                        .newCall(withRequest(coinDeskLastPriceEndpoint))
+                        .execute().body()?.string()!!
+                val json = Gson().fromJson(body, JsonObject::class.java)
+                json["bpi"]?.asJsonObject?.get(pair.type)?.asBigDecimal
+            } catch (e: Throwable) {
+                null
+            }?.run {
+                if (inverse) {
+                    BigDecimal.ONE.divide(this, MathContext(15))
+                } else {
+                    this
+                }
+            }
+        })
+    }
+
+    override fun inverse(): PriceJob = GaitameOnlineJob(pair, !inverse)
+
+    override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
+}
+
+
 class PriceConverter(vararg val jobs: PriceJob) {
     // validate that all jobs can be combined
     val tradingPair: TradingPair = jobs.map { it.tradingPair }

@@ -15,7 +15,7 @@ import java.net.URL
 import kotlin.math.max
 
 enum class SupportedCurrency {
-    BTC, MONA, ZNY, JPY, USD
+    BTC, MONA, ZNY, JPY, USD, ETH, BCH
 }
 
 typealias TradingPair = Pair<SupportedCurrency, SupportedCurrency>
@@ -54,6 +54,33 @@ const val gaitameOnlineEndpoint = "https://www.gaitameonline.com/rateaj/getrate"
 
 enum class GaitameOnlineLastPrice(val id: String, val tradingPair: TradingPair) {
     USD_JPY("USDJPY", SupportedCurrency.USD to SupportedCurrency.JPY)
+}
+
+const val coinCheckLastPriceEndpoint = "https://coincheck.com/api/rate"
+
+enum class CoinCheckLastPrice(val type: String, val tradingPair: TradingPair) {
+    BTC_JPY("btc_jpy", SupportedCurrency.BTC to SupportedCurrency.JPY);
+
+    fun toUrlString() = "$coinCheckLastPriceEndpoint/$type"
+}
+
+const val bitFlyerLastPriceEndpoint = "https://api.bitflyer.jp/v1/board"
+
+enum class BitFlyerLastPrice(val type: String, val tradingPair: TradingPair) {
+    BTC_JPY("BTC_JPY", SupportedCurrency.BTC to SupportedCurrency.JPY),
+    BTC_JPY_FX("FX_BTC_JPY", SupportedCurrency.BTC to SupportedCurrency.JPY),
+    ETH_BTC("ETH_BTC", SupportedCurrency.ETH to SupportedCurrency.BTC),
+    BCH_BTC("BCH_BTC", SupportedCurrency.BCH to SupportedCurrency.BTC);
+
+    fun toUrlString() = "$bitFlyerLastPriceEndpoint/$type"
+}
+
+const val coinDeskLastPriceEndpoint = "https://api.coindesk.com/v1/bpi/currentprice.json"
+
+enum class CoinDeskLastPrice(val type: String, val tradingPair: TradingPair) {
+    BTC_USD("USD", SupportedCurrency.BTC to SupportedCurrency.JPY);//,
+    //BTC_GBP("GBP", SupportedCurrency.BTC to SupportedCurrency.JPY),
+    //BTC_EUR("EUR", SupportedCurrency.BTC to SupportedCurrency.BTC);
 }
 
 fun withRequest(url: String) = Request.Builder().url(url).build()

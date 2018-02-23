@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.nao20010128nao.zenyprices.databinding.PriceConversionBinding
 import java.util.concurrent.Executors
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
                         ZaifJob(ZaifLastPrice.BTC_JPY, false)
                 )
         )
+
         convertions.add(
                 PriceConverter(
                         BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
@@ -35,7 +37,39 @@ class MainActivity : AppCompatActivity() {
                 )
         )
 
+        convertions.add(
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
+                        BitSharesJob(BitSharesAssets.MONA, BitSharesAssets.BTC),
+                        ZaifJob(ZaifLastPrice.BTC_JPY, false)
+                )
+        )
+
+        convertions.add(
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
+                        BitSharesJob(BitSharesAssets.MONA, BitSharesAssets.BTC),
+                        ZaifJob(ZaifLastPrice.BTC_JPY, false),
+                        ZaifJob(ZaifLastPrice.BTC_JPY, false)
+                )
+        )
+
         list.adapter = ConvAdapter(this)
+
+        startCheck()
+    }
+
+    fun resetPrices() {
+        convertions.forEach {
+            it.conversionProgress.clear()
+        }
+        list.adapter.notifyDataSetChanged()
+    }
+
+    fun startCheck() {
+        thread {
+            val conversions = convertions.flatMap { it.conversionOrder }.distinct()
+        }
     }
 
     class ConvAdapter(val activity: MainActivity) : RecyclerView.Adapter<PriceConversionVH>() {
