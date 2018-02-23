@@ -151,7 +151,7 @@ data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : Pric
         })
     }
 
-    override fun inverse(): PriceJob = GaitameOnlineJob(pair, !inverse)
+    override fun inverse(): PriceJob = CoinDeskJob(pair, !inverse)
 
     override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
 }
