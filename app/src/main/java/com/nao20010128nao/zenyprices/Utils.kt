@@ -34,6 +34,12 @@ enum class ZaifLastPrice(val pair: String) {
     fun toUrlString() = "$zaifLastPriceEndpoint/$pair"
 }
 
+val gaitameOnlineEndpoint = "https://www.gaitameonline.com/rateaj/getrate"
+
+enum class GaitameOnlineLastPrice(val pair: String) {
+    USD_JPY("USDJPY")
+}
+
 fun withRequest(url: String) = Request.Builder().url(url).build()
 
 fun okClient() = OkHttpClient()
