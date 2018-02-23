@@ -1,46 +1,54 @@
 package com.nao20010128nao.zenyprices
 
 import android.annotation.SuppressLint
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.TextView
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.ViewGroup
+import com.nao20010128nao.zenyprices.databinding.PriceConversionBinding
 import java.util.concurrent.Executors
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var list: RecyclerView
+    private val convertions: MutableList<PriceConverter> = mutableListOf()
+    private val executor = Executors.newFixedThreadPool(5)
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val text: TextView = findViewById(R.id.textInit)
+        list = findViewById(R.id.list)
+        list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        val jobs = listOf(
+        convertions.add(
                 PriceConverter(
                         BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.BTC),
                         ZaifJob(ZaifLastPrice.BTC_JPY, false)
-                ),
+                )
+        )
+        convertions.add(
                 PriceConverter(
                         BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
                         ZaifJob(ZaifLastPrice.MONA_JPY, false)
                 )
         )
-        val exec = Executors.newSingleThreadExecutor()
-        thread {
-            try {
-                val monaJpyJob = ZaifJob(ZaifLastPrice.MONA_JPY, false)
-                val znyMonaJob = BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA)
-                val monaJpy = monaJpyJob.enqueue(exec).get()
-                val znyMona = znyMonaJob.enqueue(exec).get()
-                val znyJpy = znyMona times monaJpy
-                runOnUiThread {
-                    text.text = "JPY > MONA > ZNY: $znyJpy, JPY > MONA: $monaJpy, MONA > ZNY: $znyMona"
-                }
-            } catch (e: Throwable) {
-                runOnUiThread {
-                    text.text = Log.getStackTraceString(e)
-                }
+
+        list.adapter = ConvAdapter(this)
+    }
+
+    class ConvAdapter(val activity: MainActivity) : RecyclerView.Adapter<PriceConversionVH>() {
+        override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): PriceConversionVH =
+                PriceConversionVH(PriceConversionBinding.inflate(activity.layoutInflater, parent, false))
+
+        override fun getItemCount(): Int = activity.convertions.size
+
+        override fun onBindViewHolder(holder: PriceConversionVH?, position: Int) {
+            holder?.also {
+                val conv = activity.convertions[position]
+                it.binding.jobs = conv
+                it.binding.intermediate = conv.conversionProgress
             }
         }
     }

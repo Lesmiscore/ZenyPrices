@@ -88,21 +88,30 @@ class PriceConverter(vararg val jobs: PriceJob) {
                     throw IllegalArgumentException("$a and $b can't be combined")
             }
 
-    fun startConversion(): PriceConversionProgress = PriceConversionProgress(jobs.toSet())
-}
+    val conversionOrder = jobs.map { it.tradingPair.first } + listOf(jobs.last().tradingPair.second)
 
-class PriceConversionProgress internal constructor(val jobs: Set<PriceJob>) {
-    private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
-    @JvmName("submit")
-    operator fun set(job: PriceJob, value: BigDecimal?) {
-        if (job in jobs && job !in finished.keys) {
-            finished[job] = value
+    val conversionProgress: PriceConversionProgress = PriceConversionProgress(jobs.toSet())
+
+    class PriceConversionProgress internal constructor(val jobs: Set<PriceJob>) {
+        private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
+        @JvmName("submit")
+        operator fun set(job: PriceJob, value: BigDecimal?) {
+            if (job in jobs && job !in finished.keys) {
+                finished[job] = value
+            }
+        }
+
+        fun clear() {
+            finished.clear()
+        }
+
+        fun remainingJobs() = jobs - finished.keys
+
+        fun remainingJobsCount() = remainingJobs().size
+
+        fun calculate(): BigDecimal? = when (remainingJobsCount()) {
+            0 -> finished.values.reduce { a, b -> a times b }
+            else -> null
         }
     }
-
-    fun remainingJobs() = jobs - finished.keys
-
-    fun remainingJobsCount() = remainingJobs().size
-
-    fun calculate(): BigDecimal? = finished.values.reduce { a, b -> a times b }
 }

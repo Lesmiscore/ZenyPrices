@@ -1,5 +1,8 @@
 package com.nao20010128nao.zenyprices
 
+import android.databinding.ViewDataBinding
+import android.support.v7.widget.RecyclerView
+import com.nao20010128nao.zenyprices.databinding.PriceConversionBinding
 import de.bitsharesmunich.graphenej.Asset
 import de.bitsharesmunich.graphenej.Converter.BASE_TO_QUOTE
 import de.bitsharesmunich.graphenej.Price
@@ -16,7 +19,8 @@ enum class SupportedCurrency {
 }
 
 typealias TradingPair = Pair<SupportedCurrency, SupportedCurrency>
-fun TradingPair.reverse():TradingPair = second to first
+
+fun TradingPair.reverse(): TradingPair = second to first
 
 sealed class BitSharesAssets(
         assetId: String,
@@ -96,3 +100,8 @@ fun getConversionRate(price: Price, direction: Int): BigDecimal {
 }
 
 fun String.toURL(): URL = URL(this)
+
+typealias VH = RecyclerView.ViewHolder
+
+class BindingViewHolder<out T : ViewDataBinding>(val binding: T) : VH(binding.root)
+typealias PriceConversionVH = BindingViewHolder<PriceConversionBinding>
