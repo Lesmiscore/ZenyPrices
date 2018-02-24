@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import de.bitsharesmunich.graphenej.Asset
 import java.math.BigDecimal
 import java.math.MathContext
+import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -159,7 +160,9 @@ data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : Pric
 }
 
 
-class PriceConverter(vararg val jobs: PriceJob) {
+class PriceConverter(val jobs: List<PriceJob>) {
+    constructor(vararg jobs: PriceJob) : this(Arrays.asList(*jobs))
+
     // validate that all jobs can be combined
     val tradingPair: TradingPair = jobs.map { it.tradingPair }
             .reduce { a, b ->
@@ -203,3 +206,6 @@ class PriceConverter(vararg val jobs: PriceJob) {
         }
     }
 }
+
+fun List<PriceJob>.reverseJobs(): List<PriceJob> = map { it.inverse() }.reversed()
+fun PriceConverter.reverseJobs(): PriceConverter = PriceConverter(jobs.reverseJobs())
