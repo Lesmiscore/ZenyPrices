@@ -1,5 +1,6 @@
 package com.nao20010128nao.zenyprices
 
+import android.graphics.Color
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import de.bitsharesmunich.graphenej.Asset
@@ -177,12 +178,39 @@ class PriceConverter(val jobs: List<PriceJob>) {
     val conversionProgress: PriceConversionProgress = PriceConversionProgress(jobs.toList())
 
     override fun toString(): String =
-            jobs.map { "${it.tradingPair.displayString}: ${conversionProgress[it]}" }.joinToString("\n")
+            jobs.joinToString("\n") { "${it.tradingPair.displayString}: ${conversionProgress[it]}" }
+
+    fun toStatusText(colored: Boolean): CharSequence = conversionProgress.submissions.let { subm ->
+        if (colored) {
+            jobs.joinWithStyles("\n") {
+                "${it.tradingPair.displayString}: ${conversionProgress[it]}".let { line ->
+                    if (subm.containsKey(it) && subm[it] == null) {
+                        line.colored(Color.RED)
+                    } else {
+                        line
+                    }
+                }
+            }
+        } else {
+            jobs.joinToString("\n") {
+                "${it.tradingPair.displayString}: ${conversionProgress[it]}".let { line ->
+                    if (subm.containsKey(it) && subm[it] == null) {
+                        "$line*"
+                    } else {
+                        line
+                    }
+                }
+            }
+        }
+    }
 
     class PriceConversionProgress internal constructor(val jobs: List<PriceJob>) {
         private val jobsSet = jobs.toSet()
 
         private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
+
+        val submissions get() = Collections.unmodifiableMap(finished)
+
         @JvmName("submit")
         operator fun set(job: PriceJob, value: BigDecimal?) {
             if (job in jobsSet && job !in finished.keys) {

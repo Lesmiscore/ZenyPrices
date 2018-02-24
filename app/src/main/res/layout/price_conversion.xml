@@ -54,7 +54,7 @@
                 android:id="@+id/intermediatePrices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{``+jobs+``}" />
+                android:text="@{jobs.toStatusText(true)}" />
         </LinearLayout>
     </LinearLayout>
 </layout>

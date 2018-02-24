@@ -2,16 +2,11 @@ package com.nao20010128nao.zenyprices
 
 import android.databinding.ViewDataBinding
 import android.support.v7.widget.RecyclerView
+import android.text.SpannableStringBuilder
 import com.nao20010128nao.zenyprices.databinding.PriceConversionBinding
-import de.bitsharesmunich.graphenej.Converter.BASE_TO_QUOTE
-import de.bitsharesmunich.graphenej.Price
-import de.bitsharesmunich.graphenej.errors.IncompleteAssetError
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.math.BigDecimal
-import java.math.MathContext
 import java.net.URL
-import kotlin.math.max
 
 fun withRequest(url: String) = Request.Builder().url(url).build()
 
