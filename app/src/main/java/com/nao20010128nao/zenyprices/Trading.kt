@@ -34,10 +34,10 @@ fun getConversionRate(price: Price, direction: Int): BigDecimal {
     //        System.out.println(String.format("base: %d, quote: %d", baseValue.longValue(), quoteValue.longValue()));
     if (direction == Converter.BASE_TO_QUOTE) {
         conversionRate = quoteValue.divide(baseValue, mathContext)
-        precisionFactor = TEN.pow(base.precision).divide(TEN.pow(quote.precision), mathContext)
+        precisionFactor = TEN.pow(base.precision) / TEN.pow(quote.precision)
     } else {
         conversionRate = baseValue.divide(quoteValue, mathContext)
-        precisionFactor = TEN.pow(quote.precision).divide(TEN.pow(base.precision), mathContext)
+        precisionFactor = TEN.pow(quote.precision) / TEN.pow(base.precision)
     }
     //        System.out.println(String.format("conversion rate: %.4f, precision factor: %.2f", conversionRate, precisionFactor));
     return conversionRate * precisionFactor
