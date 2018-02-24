@@ -1,8 +1,11 @@
 package com.nao20010128nao.zenyprices
 
 import org.junit.Test
+import java.util.concurrent.Executors
 
 class Tests {
+    val exec = Executors.newSingleThreadExecutor()
+
     @Test
     fun testTradingPairValidation() {
         val conv = PriceConverter(
@@ -12,5 +15,11 @@ class Tests {
         )
         val pair = conv.tradingPair
         assert(pair == SupportedCurrency.ZNY to SupportedCurrency.USD)
+    }
+
+    @Test
+    fun testBitSharesRate() {
+        val future = exec.getBitSharesPair(BitSharesAssets.BTC, BitSharesAssets.ZNY)
+        future.get()
     }
 }

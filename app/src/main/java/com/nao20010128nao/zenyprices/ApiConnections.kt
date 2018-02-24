@@ -14,14 +14,14 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 
-fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first{
+fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first {
     try {
         WebSocketFactory().createSocket(it).also {
             it.connect()
             it.disconnect()
         }
         true
-    }catch (e:Throwable){
+    } catch (e: Throwable) {
         false
     }
 }
@@ -45,14 +45,21 @@ fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecim
                         val quoteToBaseExchange = getConversionRate(order.sellPrice, Converter.QUOTE_TO_BASE)
 
                         println(String.format("> id: %s, base to quote: %.5f, quote to base: %.5f", order.objectId, baseToQuoteExchange, quoteToBaseExchange))
+                    } else {
+                        order.sellPrice.base.asset.precision = quote.precision;
+                        order.sellPrice.quote.asset.precision = base.precision;
+
+                        val baseToQuoteExchange = getConversionRate(order.sellPrice, Converter.BASE_TO_QUOTE);
+                        val quoteToBaseExchange = getConversionRate(order.sellPrice, Converter.QUOTE_TO_BASE);
+                        println(String.format("< id: %s, base to quote: %.5f, quote to base: %.5f", order.objectId, baseToQuoteExchange, quoteToBaseExchange));
                         result = if (result == null) {
-                            baseToQuoteExchange
+                            quoteToBaseExchange
                         } else {
                             val r = result!!
-                            if (r < baseToQuoteExchange) {
+                            if (r < quoteToBaseExchange) {
                                 r
                             } else {
-                                baseToQuoteExchange
+                                quoteToBaseExchange
                             }
                         }
                     }
