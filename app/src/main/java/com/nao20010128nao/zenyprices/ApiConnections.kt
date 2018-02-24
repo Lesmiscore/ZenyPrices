@@ -57,9 +57,9 @@ fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecim
                         } else {
                             val r = result!!
                             if (r < quoteToBaseExchange) {
-                                r
-                            } else {
                                 quoteToBaseExchange
+                            } else {
+                                r
                             }
                         }
                     }
