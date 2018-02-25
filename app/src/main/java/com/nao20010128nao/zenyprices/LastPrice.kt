@@ -18,7 +18,9 @@ val bitSharesFullNodes = listOf(
         "wss://proj.tokyo:8090",
         "wss://bts.ai.la/ws",
         "wss://openledger.hk/ws",
-        "wss://bitshares.openledger.info/ws"
+        "wss://bitshares.openledger.info/ws",
+        "wss://bitshares-api.wancloud.io/ws",
+        "wss://bit.btsabc.org/ws"
 )
 
 const val zaifLastPriceEndpoint = "https://api.zaif.jp/api/1/last_price"
