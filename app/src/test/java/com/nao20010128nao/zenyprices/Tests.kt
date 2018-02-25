@@ -20,6 +20,12 @@ class Tests {
     @Test
     fun testBitSharesRate() {
         val future = exec.getBitSharesPair(BitSharesAssets.BTC, BitSharesAssets.ZNY)
-        future.get()
+        println(future.get())
+    }
+
+    @Test
+    fun testBitSharesRate2() {
+        val future = exec.getBitSharesPair(BitSharesAssets.ZNY, BitSharesAssets.BTC)
+        println(future.get())
     }
 }
