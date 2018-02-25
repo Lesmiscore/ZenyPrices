@@ -31,7 +31,7 @@ fun getConversionRate(price: Price, direction: Int): BigDecimal {
     val mathContext = MathContext(max(base.precision, quote.precision) * 2)
     val baseValue = BigDecimal(price.base.amount.bigIntegerValue())
     val quoteValue = BigDecimal(price.quote.amount.bigIntegerValue())
-    //        System.out.println(String.format("base: %d, quote: %d", baseValue.longValue(), quoteValue.longValue()));
+
     if (direction == Converter.BASE_TO_QUOTE) {
         conversionRate = quoteValue.divide(baseValue, mathContext)
         precisionFactor = TEN.pow(base.precision).divide(TEN.pow(quote.precision), mathContext)
@@ -39,6 +39,6 @@ fun getConversionRate(price: Price, direction: Int): BigDecimal {
         conversionRate = baseValue.divide(quoteValue, mathContext)
         precisionFactor = TEN.pow(quote.precision).divide(TEN.pow(base.precision), mathContext)
     }
-    //        System.out.println(String.format("conversion rate: %.4f, precision factor: %.2f", conversionRate, precisionFactor));
+
     return conversionRate * precisionFactor
 }
