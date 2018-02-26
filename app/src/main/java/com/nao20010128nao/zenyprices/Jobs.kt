@@ -3,7 +3,6 @@ package com.nao20010128nao.zenyprices
 import android.graphics.Color
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import de.bitsharesmunich.graphenej.Asset
 import java.math.BigDecimal
 import java.math.MathContext
 import java.util.*
@@ -180,25 +179,13 @@ class PriceConverter(val jobs: List<PriceJob>) {
     override fun toString(): String =
             jobs.joinToString("\n") { "${it.tradingPair.displayString}: ${conversionProgress[it]}" }
 
-    fun toStatusText(colored: Boolean): CharSequence = conversionProgress.submissions.let { subm ->
-        if (colored) {
-            jobs.joinWithStyles("\n") {
-                "${it.tradingPair.displayString}: ${conversionProgress[it]}".let { line ->
-                    if (subm.containsKey(it) && subm[it] == null) {
-                        line.colored(Color.RED)
-                    } else {
-                        line
-                    }
-                }
-            }
-        } else {
-            jobs.joinToString("\n") {
-                "${it.tradingPair.displayString}: ${conversionProgress[it]}".let { line ->
-                    if (subm.containsKey(it) && subm[it] == null) {
-                        "$line*"
-                    } else {
-                        line
-                    }
+    fun toStatusText(): CharSequence = conversionProgress.submissions.let { subm ->
+        jobs.joinWithStyles("\n") {
+            "${it.tradingPair.displayString}: ${conversionProgress[it]}".let { line ->
+                if (subm.containsKey(it) && subm[it] == null) {
+                    line.colored(Color.RED)
+                } else {
+                    line
                 }
             }
         }

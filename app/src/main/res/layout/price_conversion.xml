@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:gravity="center_vertical"
-            android:text="@{jobs.conversionOrder}"
+            android:text="@{jobs}"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="25sp" />
 
@@ -54,7 +54,7 @@
                 android:id="@+id/intermediatePrices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{jobs.toStatusText(true)}" />
+                android:text="@{jobs.toStatusText()}" />
         </LinearLayout>
     </LinearLayout>
 </layout>

@@ -73,5 +73,4 @@ fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecim
         synchronized(lock) { lock.javaWait() }
         result
     })
-
 }

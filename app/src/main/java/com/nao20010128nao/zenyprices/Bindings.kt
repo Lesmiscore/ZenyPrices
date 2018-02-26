@@ -1,9 +1,18 @@
 package com.nao20010128nao.zenyprices
 
 import android.databinding.BindingAdapter
+import android.graphics.Color
 import android.widget.TextView
 
 @BindingAdapter("android:text")
-fun TextView.setConversionOrder(order: List<SupportedCurrency>){
-    text = order.map { it.name.toUpperCase() }.joinToString(" > ")
+fun TextView.setConversionOrder(order: PriceConverter) {
+    val subm = order.conversionProgress.submissions
+    text = order.conversionOrder.map { it.name.toUpperCase() }.joinWithStylesWithCustomSeparator { it ->
+        val job = order.jobs[it]
+        if (subm.containsKey(job) && subm[job] == null) {
+            " > ".colored(Color.RED)
+        } else {
+            " > "
+        }
+    }
 }
