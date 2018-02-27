@@ -2,7 +2,6 @@ package com.nao20010128nao.zenyprices
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 
 infix fun CharSequence.then(cs: CharSequence): CharSequence = SpannableStringBuilder().append(this).append(cs)

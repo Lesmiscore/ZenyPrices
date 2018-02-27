@@ -11,6 +11,7 @@ sealed class BitSharesAssets(
     object BTC : BitSharesAssets("1.3.1570", "BTC", 8, SupportedCurrency.BTC)
     object MONA : BitSharesAssets("1.3.2570", "MONA", 6, SupportedCurrency.MONA)
     object ZNY : BitSharesAssets("1.3.2481", "ZNY", 6, SupportedCurrency.ZNY)
+    object OpenBTC : BitSharesAssets("1.3.861", "BTC", 8, SupportedCurrency.BTC)
 }
 
 // List of BitShares full nodes, from OpenLedger and CryptoBridge

@@ -99,6 +99,19 @@ class MainActivity : AppCompatActivity() {
                 ).reverseJobs()
         )
 
+        convertions.add(
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.BTC, BitSharesAssets.OpenBTC)
+                )
+        )
+
+        convertions.add(
+                PriceConverter(
+                        BitSharesJob(BitSharesAssets.OpenBTC, BitSharesAssets.BTC)
+                )
+        )
+
+
         list.adapter = ConvAdapter(this)
 
         startCheck()
