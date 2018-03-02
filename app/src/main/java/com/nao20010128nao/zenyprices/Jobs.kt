@@ -214,7 +214,7 @@ class PriceConverter(val jobs: List<PriceJob>) {
         @JvmName("submit")
         operator fun set(job: PriceJob, value: BigDecimal?) {
             if (job in jobsSet && job !in finished.keys) {
-                finished[job] = value
+                finished[job] = value?.stripTrailingZeros()
             }
         }
 
