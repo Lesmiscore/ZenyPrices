@@ -61,7 +61,20 @@ enum class BitFlyerLastPrice(val type: String, val tradingPair: TradingPair) {
 const val coinDeskLastPriceEndpoint = "https://api.coindesk.com/v1/bpi/currentprice.json"
 
 enum class CoinDeskLastPrice(val type: String, val tradingPair: TradingPair) {
-    BTC_USD("USD", SupportedCurrency.BTC to SupportedCurrency.USD);//,
-    //BTC_GBP("GBP", SupportedCurrency.BTC to SupportedCurrency.JPY),
-    //BTC_EUR("EUR", SupportedCurrency.BTC to SupportedCurrency.BTC);
+    BTC_USD("USD", SupportedCurrency.BTC to SupportedCurrency.USD),
+    BTC_GBP("GBP", SupportedCurrency.BTC to SupportedCurrency.GBP),
+    BTC_EUR("EUR", SupportedCurrency.BTC to SupportedCurrency.EUR);
+}
+
+enum class BitbankLastPrice(val type: String,val tradingPair: TradingPair){
+    BTC_JPY("btc_jpy", SupportedCurrency.BTC to SupportedCurrency.JPY),
+    XRP_JPY("xrp_jpy", SupportedCurrency.XRP to SupportedCurrency.JPY),
+    LTC_BTC("ltc_btc", SupportedCurrency.LTC to SupportedCurrency.BTC),
+    ETH_BTC("eth_btc", SupportedCurrency.ETH to SupportedCurrency.BTC),
+    MONA_JPY("mona_jpy", SupportedCurrency.MONA to SupportedCurrency.JPY),
+    MONA_BTC("mona_btc", SupportedCurrency.MONA to SupportedCurrency.BTC),
+    BCH_JPY("bcc_jpy", SupportedCurrency.BCH to SupportedCurrency.JPY),
+    BCH_BTC("bcc_btc", SupportedCurrency.BCH to SupportedCurrency.BTC);
+
+    fun toUrlString() = "https://public.bitbank.cc/$type/ticker"
 }

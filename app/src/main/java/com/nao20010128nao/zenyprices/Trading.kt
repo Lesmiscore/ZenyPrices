@@ -9,7 +9,7 @@ import kotlin.math.max
 
 
 enum class SupportedCurrency {
-    BTC, MONA, ZNY, JPY, USD, ETH, BCH
+    BTC, MONA, ZNY, JPY, USD, ETH, BCH, EUR, GBP, XRP, LTC
 }
 
 typealias TradingPair = Pair<SupportedCurrency, SupportedCurrency>

@@ -34,7 +34,8 @@ class MainActivity : AppCompatActivity() {
                 ZaifJob(ZaifLastPrice.BTC_JPY, false),
                 CoinCheckJob(CoinCheckLastPrice.BTC_JPY, false),
                 BitFlyerJob(BitFlyerLastPrice.BTC_JPY, false),
-                BitFlyerJob(BitFlyerLastPrice.BTC_JPY_FX, false)
+                BitFlyerJob(BitFlyerLastPrice.BTC_JPY_FX, false),
+                BitbankJob(BitbankLastPrice.BTC_JPY, false)
         ).forEach {
             convertions.add(
                     PriceConverter(
@@ -44,12 +45,17 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        convertions.add(
-                PriceConverter(
-                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
-                        ZaifJob(ZaifLastPrice.MONA_JPY, false)
-                )
-        )
+        listOf(
+                ZaifJob(ZaifLastPrice.MONA_JPY, false),
+                BitbankJob(BitbankLastPrice.MONA_JPY, false)
+        ).forEach {
+            convertions.add(
+                    PriceConverter(
+                            BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.MONA),
+                            it
+                    )
+            )
+        }
 
         convertions.add(
                 PriceConverter(

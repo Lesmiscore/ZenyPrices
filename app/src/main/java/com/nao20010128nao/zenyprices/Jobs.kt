@@ -27,7 +27,7 @@ data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
                 val body = okClient().newCall(withRequest(url)).execute().body()?.string()!!
                 //val body = url.toURL().openStream().bufferedReader()
                 val json = Gson().fromJson(body, JsonObject::class.java)
-                json["last_price"]?.asBigDecimal
+                json["last_price"].asBigDecimal
             } catch (e: Throwable) {
                 null
             }?.run {
@@ -67,8 +67,8 @@ data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boole
                         .execute().body()?.string()!!
                 val json = Gson().fromJson(body, JsonObject::class.java)
                 json["quotes"].asJsonArray
-                        .firstOrNull { it.asJsonObject["currencyPairCode"]?.asString == pair.id }
-                        ?.asJsonObject?.get("open")?.asBigDecimal
+                        .first { it.asJsonObject["currencyPairCode"].asString == pair.id }
+                        .asJsonObject["open"].asBigDecimal
             } catch (e: Throwable) {
                 null
             }?.run {
@@ -114,7 +114,6 @@ data class CoinCheckJob(val pair: CoinCheckLastPrice, val inverse: Boolean) : Pr
     override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
 }
 
-
 data class BitFlyerJob(val pair: BitFlyerLastPrice, val inverse: Boolean) : PriceJob {
     override val source: String = "bitFlyer"
 
@@ -152,9 +151,7 @@ data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : Pric
                         .newCall(withRequest(coinDeskLastPriceEndpoint))
                         .execute().body()?.string()!!
                 val json = Gson().fromJson(body, JsonObject::class.java)
-                json["bpi"]?.asJsonObject
-                        ?.get(pair.type)?.asJsonObject
-                        ?.get("rate_float")?.asBigDecimal
+                json["bpi"].asJsonObject[pair.type].asJsonObject["rate_float"].asBigDecimal
             } catch (e: Throwable) {
                 null
             }?.run {
@@ -168,6 +165,34 @@ data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : Pric
     }
 
     override fun inverse(): PriceJob = CoinDeskJob(pair, !inverse)
+
+    override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
+}
+
+
+data class BitbankJob(val pair: BitbankLastPrice, val inverse: Boolean) : PriceJob {
+    override val source: String = "Bitbank"
+
+    override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
+        return exec.submit(Callable {
+            val url = pair.toUrlString()
+            try {
+                val body = okClient().newCall(withRequest(url)).execute().body()?.string()!!
+                val json = Gson().fromJson(body, JsonObject::class.java)
+                json["data"].asJsonObject["last"].asBigDecimal
+            } catch (e: Throwable) {
+                null
+            }?.run {
+                if (inverse) {
+                    BigDecimal.ONE.divide(this, MathContext(15))
+                } else {
+                    this
+                }
+            }
+        })
+    }
+
+    override fun inverse(): PriceJob = BitbankJob(pair, !inverse)
 
     override val tradingPair: TradingPair = if (inverse) pair.tradingPair.reverse() else pair.tradingPair
 }
