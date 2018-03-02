@@ -55,7 +55,7 @@ enum class BitFlyerLastPrice(val type: String, val tradingPair: TradingPair) {
     ETH_BTC("ETH_BTC", SupportedCurrency.ETH to SupportedCurrency.BTC),
     BCH_BTC("BCH_BTC", SupportedCurrency.BCH to SupportedCurrency.BTC);
 
-    fun toUrlString() = "$bitFlyerLastPriceEndpoint/$type"
+    fun toUrlString() = "$bitFlyerLastPriceEndpoint/?product_code=$type"
 }
 
 const val coinDeskLastPriceEndpoint = "https://api.coindesk.com/v1/bpi/currentprice.json"

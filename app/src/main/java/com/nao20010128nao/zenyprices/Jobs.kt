@@ -14,9 +14,12 @@ interface PriceJob {
     fun enqueue(exec: ExecutorService): Future<BigDecimal?>
     fun inverse(): PriceJob
     val tradingPair: TradingPair
+    val source: String
 }
 
 data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
+    override val source: String = "Zaif"
+
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
         return exec.submit(Callable {
             val url = pair.toUrlString()
@@ -43,6 +46,8 @@ data class ZaifJob(val pair: ZaifLastPrice, val inverse: Boolean) : PriceJob {
 }
 
 data class BitSharesJob(val base: BitSharesAssets, val quote: BitSharesAssets) : PriceJob {
+    override val source: String = "BitShares"
+
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> =
             exec.getBitSharesPair(base, quote)
 
@@ -52,6 +57,8 @@ data class BitSharesJob(val base: BitSharesAssets, val quote: BitSharesAssets) :
 }
 
 data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boolean) : PriceJob {
+    override val source: String = "Gaitame Online"
+
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
         return exec.submit(Callable {
             try {
@@ -81,6 +88,8 @@ data class GaitameOnlineJob(val pair: GaitameOnlineLastPrice, val inverse: Boole
 
 
 data class CoinCheckJob(val pair: CoinCheckLastPrice, val inverse: Boolean) : PriceJob {
+    override val source: String = "CoinCheck"
+
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
         return exec.submit(Callable {
             val url = pair.toUrlString()
@@ -107,6 +116,8 @@ data class CoinCheckJob(val pair: CoinCheckLastPrice, val inverse: Boolean) : Pr
 
 
 data class BitFlyerJob(val pair: BitFlyerLastPrice, val inverse: Boolean) : PriceJob {
+    override val source: String = "bitFlyer"
+
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
         return exec.submit(Callable {
             val url = pair.toUrlString()
@@ -132,6 +143,8 @@ data class BitFlyerJob(val pair: BitFlyerLastPrice, val inverse: Boolean) : Pric
 }
 
 data class CoinDeskJob(val pair: CoinDeskLastPrice, val inverse: Boolean) : PriceJob {
+    override val source: String = "CoinDesk"
+
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
         return exec.submit(Callable {
             try {
@@ -181,7 +194,7 @@ class PriceConverter(val jobs: List<PriceJob>) {
 
     fun toStatusText(): CharSequence = conversionProgress.submissions.let { subm ->
         jobs.joinWithStyles("\n") {
-            "${it.tradingPair.displayString}: ${conversionProgress[it]}".let { line ->
+            "${it.tradingPair.displayString}: ${conversionProgress[it]} (${it.source})".let { line ->
                 if (subm.containsKey(it) && subm[it] == null) {
                     line.colored(Color.RED)
                 } else {

@@ -30,12 +30,19 @@ class MainActivity : AppCompatActivity() {
         list = findViewById(R.id.list)
         list.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        convertions.add(
-                PriceConverter(
-                        BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.BTC),
-                        ZaifJob(ZaifLastPrice.BTC_JPY, false)
-                )
-        )
+        listOf(
+                ZaifJob(ZaifLastPrice.BTC_JPY, false),
+                CoinCheckJob(CoinCheckLastPrice.BTC_JPY, false),
+                BitFlyerJob(BitFlyerLastPrice.BTC_JPY, false),
+                BitFlyerJob(BitFlyerLastPrice.BTC_JPY_FX, false)
+        ).forEach {
+            convertions.add(
+                    PriceConverter(
+                            BitSharesJob(BitSharesAssets.ZNY, BitSharesAssets.BTC),
+                            it
+                    )
+            )
+        }
 
         convertions.add(
                 PriceConverter(
