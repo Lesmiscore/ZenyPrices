@@ -115,7 +115,10 @@ data class CoinCheckJob(val pair: CoinCheckLastPrice, val inverse: Boolean) : Pr
 }
 
 data class BitFlyerJob(val pair: BitFlyerLastPrice, val inverse: Boolean) : PriceJob {
-    override val source: String = "bitFlyer"
+    override val source: String = when (pair) {
+        BitFlyerLastPrice.BTC_JPY_FX -> "bitFlyer FX"
+        else -> "bitFlyer"
+    }
 
     override fun enqueue(exec: ExecutorService): Future<BigDecimal?> {
         return exec.submit(Callable {
