@@ -14,6 +14,13 @@ sealed class BitSharesAssets(
     object OpenBTC : BitSharesAssets("1.3.861", "BTC", 8, SupportedCurrency.BTC)
 }
 
+val bitSharesAssets: List<BitSharesAssets> = listOf(
+        BitSharesAssets.BTC,
+        BitSharesAssets.MONA,
+        BitSharesAssets.ZNY,
+        BitSharesAssets.OpenBTC
+)
+
 // List of BitShares full nodes, from OpenLedger and CryptoBridge
 val bitSharesFullNodes = listOf(
         "wss://proj.tokyo:8090",
@@ -66,7 +73,7 @@ enum class CoinDeskLastPrice(val type: String, val tradingPair: TradingPair) {
     BTC_EUR("EUR", SupportedCurrency.BTC to SupportedCurrency.EUR);
 }
 
-enum class BitbankLastPrice(val type: String,val tradingPair: TradingPair){
+enum class BitbankLastPrice(val type: String, val tradingPair: TradingPair) {
     BTC_JPY("btc_jpy", SupportedCurrency.BTC to SupportedCurrency.JPY),
     XRP_JPY("xrp_jpy", SupportedCurrency.XRP to SupportedCurrency.JPY),
     LTC_BTC("ltc_btc", SupportedCurrency.LTC to SupportedCurrency.BTC),
