@@ -16,8 +16,8 @@ val allPossibleJobs: List<PriceJob>
         GaitameOnlineJob(it, false)
     }).run {
         this + map { it.inverse() }
-    } + bitSharesAssets.map { a ->
+    } + bitSharesAssets.flatMap { a ->
         (bitSharesAssets - a).map { b ->
             BitSharesJob(a, b)
         }
-    }.flatMap { it }
+    }

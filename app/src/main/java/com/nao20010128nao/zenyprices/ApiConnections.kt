@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 
+/*
 fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first {
     try {
         WebSocketFactory().createSocket(it).also {
@@ -25,6 +26,9 @@ fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first {
         false
     }
 }
+*/
+
+fun findAvailableBitSharesNode(): String = "wss://openledger.hk/ws"
 
 // quote / base
 fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecimal?> {

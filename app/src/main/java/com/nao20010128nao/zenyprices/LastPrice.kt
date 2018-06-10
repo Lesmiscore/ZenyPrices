@@ -23,7 +23,6 @@ val bitSharesAssets: List<BitSharesAssets> = listOf(
 
 // List of BitShares full nodes, from OpenLedger and CryptoBridge
 val bitSharesFullNodes = listOf(
-        "wss://proj.tokyo:8090",
         "wss://bts.ai.la/ws",
         "wss://openledger.hk/ws",
         "wss://bitshares.openledger.info/ws",
