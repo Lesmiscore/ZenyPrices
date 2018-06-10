@@ -202,7 +202,7 @@ data class BitbankJob(val pair: BitbankLastPrice, val inverse: Boolean) : PriceJ
 
 
 class PriceConverter(val jobs: List<PriceJob>) {
-    constructor(vararg jobs: PriceJob) : this(Arrays.asList(*jobs))
+    constructor(vararg jobs: PriceJob) : this(jobs.asList())
 
     // validate that all jobs can be combined
     val tradingPair: TradingPair = jobs.map { it.tradingPair }
@@ -237,7 +237,7 @@ class PriceConverter(val jobs: List<PriceJob>) {
 
         private val finished: MutableMap<PriceJob, BigDecimal?> = mutableMapOf()
 
-        val submissions get() = Collections.unmodifiableMap(finished)
+        val submissions: Submissions get() = Collections.unmodifiableMap(finished)
 
         @JvmName("submit")
         operator fun set(job: PriceJob, value: BigDecimal?) {
@@ -251,6 +251,12 @@ class PriceConverter(val jobs: List<PriceJob>) {
         fun clear() {
             finished.clear()
         }
+
+        fun reject(job: PriceJob) {
+            finished.remove(job)
+        }
+
+        fun isJobFailed(job: PriceJob) = submissions.isFailed(job)
 
         fun remainingJobs() = jobsSet - finished.keys
 

@@ -9,7 +9,7 @@ fun TextView.setConversionOrder(order: PriceConverter) {
     val subm = order.conversionProgress.submissions
     text = order.conversionOrder.map { it.name.toUpperCase() }.joinWithStylesWithCustomSeparator { it ->
         val job = order.jobs[it]
-        if (subm.containsKey(job) && subm[job] == null) {
+        if (subm.isFailed(job)) {
             " > ".colored(Color.RED)
         } else {
             " > "

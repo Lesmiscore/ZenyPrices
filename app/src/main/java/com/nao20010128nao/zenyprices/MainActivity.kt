@@ -137,26 +137,33 @@ class MainActivity : AppCompatActivity() {
         list.adapter.notifyDataSetChanged()
     }
 
-    fun startCheck() {
-        val jobs = convertions.flatMap { it.jobs.toList() }.distinct()
+    fun startCheck(recheckErrors: Boolean = false) {
+        val jobs = if (recheckErrors)
+            convertions.flatMap { conv -> conv.jobs.filter { conv.conversionProgress.isJobFailed(it) } }.distinct()
+        else
+            convertions.flatMap { it.jobs }.distinct()
         jobs.forEach { job ->
             Futures.addCallback(job.enqueue(executor) as ListenableFuture<BigDecimal?>, object : FutureCallback<BigDecimal?> {
                 override fun onSuccess(result: BigDecimal?) {
                     runOnUiThread {
-                        convertions.forEach {
+                        convertions.forEachIndexed { index, it ->
                             it.conversionProgress[job] = result
+                            if (job in it.conversionProgress.jobs) {
+                                list.adapter.notifyItemChanged(index)
+                            }
                         }
-                        list.adapter.notifyDataSetChanged()
                     }
                 }
 
                 override fun onFailure(err: Throwable?) {
                     runOnUiThread {
                         err?.printStackTrace()
-                        convertions.forEach {
+                        convertions.forEachIndexed { index, it ->
                             it.conversionProgress[job] = null
+                            if (job in it.conversionProgress.jobs) {
+                                list.adapter.notifyItemChanged(index)
+                            }
                         }
-                        list.adapter.notifyDataSetChanged()
                     }
                 }
             })
@@ -165,6 +172,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean = menu?.run {
         add(0, 0, 0, R.string.update)
+        add(0, 1, 0, R.string.update_errors)
         true
     } == true
 
@@ -174,6 +182,9 @@ class MainActivity : AppCompatActivity() {
                 0 -> yay(true) {
                     resetPrices()
                     startCheck()
+                }
+                1 -> yay(true) {
+                    startCheck(true)
                 }
                 else -> false
             }

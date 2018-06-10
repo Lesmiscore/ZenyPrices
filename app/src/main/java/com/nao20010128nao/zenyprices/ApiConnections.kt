@@ -12,6 +12,7 @@ import java.math.BigDecimal
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicReference
 
 
 /*
@@ -28,18 +29,18 @@ fun findAvailableBitSharesNode(): String = bitSharesFullNodes.first {
 }
 */
 
-fun findAvailableBitSharesNode(): String = "wss://openledger.hk/ws"
+fun findAvailableBitSharesNode(): String = "wss://ws.hellobts.com/"
 
 // quote / base
 fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecimal?> {
     return submit(Callable {
-        var result: BigDecimal? = null
+        val result = AtomicReference<BigDecimal>()
         val lock = Any()
         val ws = WebSocketFactory().createSocket(findAvailableBitSharesNode())
         ws.addListener(GetLimitOrders(base.objectId, quote.objectId, 100, object : WitnessResponseListener {
             override fun onSuccess(response: WitnessResponse<*>) {
                 val orders = response.result as List<LimitOrder>
-                assert(!orders.isEmpty())
+                require(!orders.isEmpty())
                 for (order in orders) {
                     if (order.sellPrice.base.asset.objectId == base.objectId) {
                         order.sellPrice.base.asset.precision = base.precision
@@ -48,18 +49,23 @@ fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecim
                         val baseToQuoteExchange = getConversionRate(order.sellPrice, Converter.BASE_TO_QUOTE)
                         val quoteToBaseExchange = getConversionRate(order.sellPrice, Converter.QUOTE_TO_BASE)
 
-                        println(String.format("> id: %s, base to quote: %.5f, quote to base: %.5f", order.objectId, baseToQuoteExchange, quoteToBaseExchange))
+                        println("> %s btq: %.5f qtb: %.5f".format(order.objectId, baseToQuoteExchange, quoteToBaseExchange))
+                        result.value = if (result.value == null) {
+                            baseToQuoteExchange
+                        } else {
+                            min(result.value!!, quoteToBaseExchange)
+                        }
                     } else {
-                        order.sellPrice.base.asset.precision = quote.precision;
-                        order.sellPrice.quote.asset.precision = base.precision;
+                        order.sellPrice.base.asset.precision = quote.precision
+                        order.sellPrice.quote.asset.precision = base.precision
 
-                        val baseToQuoteExchange = getConversionRate(order.sellPrice, Converter.BASE_TO_QUOTE);
-                        val quoteToBaseExchange = getConversionRate(order.sellPrice, Converter.QUOTE_TO_BASE);
-                        println(String.format("< id: %s, base to quote: %.5f, quote to base: %.5f", order.objectId, baseToQuoteExchange, quoteToBaseExchange));
-                        result = if (result == null) {
+                        val baseToQuoteExchange = getConversionRate(order.sellPrice, Converter.BASE_TO_QUOTE)
+                        val quoteToBaseExchange = getConversionRate(order.sellPrice, Converter.QUOTE_TO_BASE)
+                        println("< %s btq: %.5f qtb: %.5f".format(order.objectId, baseToQuoteExchange, quoteToBaseExchange));
+                        result.value = if (result.value == null) {
                             quoteToBaseExchange
                         } else {
-                            max(result!!, quoteToBaseExchange)
+                            max(result.value!!, quoteToBaseExchange)
                         }
                     }
                 }
@@ -75,6 +81,6 @@ fun ExecutorService.getBitSharesPair(base: Asset, quote: Asset): Future<BigDecim
         }))
         ws.connect()
         synchronized(lock) { lock.javaWait() }
-        result
+        result.value
     })
 }
